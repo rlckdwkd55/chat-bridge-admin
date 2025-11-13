@@ -22,18 +22,13 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 @app.get("/", response_class=HTMLResponse)
-async def admin(request: Request):
-    return templates.TemplateResponse("base.html", {"request": request, "title": "Dashboard"})
+async def dashboard(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request, "title": "대시보드"})
 
-# === AdminLTE 페이지 라우트 ===
-@app.get("/admin", response_class=HTMLResponse)
-async def admin_dashboard(request: Request):
-    return templates.TemplateResponse("admin/dashboard.html", {"request": request, "title": "Dashboard"})
+@app.get("/chat", response_class=HTMLResponse)
+async def chat(request: Request):
+    return templates.TemplateResponse("chat.html", {"request": request, "title": "채팅"})
 
-@app.get("/admin/chat", response_class=HTMLResponse)
-async def admin_chat(request: Request):
-    return templates.TemplateResponse("admin/chat.html", {"request": request, "title": "Chat"})
-
-@app.get("/admin/upload", response_class=HTMLResponse)
-async def admin_upload(request: Request):
-    return templates.TemplateResponse("admin/upload.html", {"request": request, "title": "Upload"})
+@app.get("/upload", response_class=HTMLResponse)
+async def upload(request: Request):
+    return templates.TemplateResponse("upload.html", {"request": request, "title": "임베딩 파일 업로드"})

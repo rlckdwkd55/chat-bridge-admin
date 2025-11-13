@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Chat Bridge Admin{% endblock %}</title>
+    <link rel="stylesheet" href="/static/css/style.css" />
+    {% block head %}{% endblock %}
+</head>
+<body>
+<div class="layout">
+    <!-- 사이드바 -->
+    <aside class="sidebar">
+        <div class="logo">
+            <h1>Chat <span>Bridge</span></h1>
+            <p class="subtitle">Admin Dashboard</p>
+        </div>
+        <nav class="menu">
+            <a href="/" class="menu-item {% if request.path == '/' %}active{% endif %}">📊 대시보드</a>
+            <a href="/chat" class="menu-item {% if '/chat' in request.path %}active{% endif %}">💬 채팅</a>
+            <a href="/upload" class="menu-item {% if '/upload' in request.path %}active{% endif %}">📁 임베딩 파일 업로드</a>
+        </nav>
+    </aside>
+
+    <!-- 메인 콘텐츠 -->
+    <div class="content">
+        {% block content %}{% endblock %}
+    </div>
+</div>
+</body>
+</html>

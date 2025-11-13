@@ -11,3 +11,7 @@ langchain-qdrant
 langchain-text-splitters
 sentence-transformers
 qdrant-client
+
+# 시스템 모니터링
+psutil
+GPUtil

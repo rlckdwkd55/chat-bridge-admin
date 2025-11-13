@@ -1,30 +1,113 @@
 {% extends "layout.html" %}
 {% block title %}대시보드{% endblock %}
 
+{% block head %}
+<script src="/static/js/system_chart.js" defer></script>
+{% endblock %}
+
 {% block content %}
 <main>
-    <header class="header">
-        <div>
-            <h2>대시보드</h2>
-            <p>시스템 상태와 주요 정보를 확인할 수 있습니다.</p>
-        </div>
-    </header>
-
     <div class="card-grid">
-        <div class="card">
-            <h3 class="card-title">시스템 상태</h3>
-            <p class="card-text">시스템이 정상적으로 운영 중입니다.</p>
-        </div>
-        
-        <div class="card">
-            <h3 class="card-title">임베딩 파일</h3>
-            <p class="card-text">업로드된 파일 목록을 확인하세요.</p>
-        </div>
-        
-        <div class="card">
-            <h3 class="card-title">채팅 모델</h3>
-            <p class="card-text">준비 중입니다.</p>
-        </div>
+        <!-- CPU 요약 -->
+        <section class="stat-card stat-card-cpu">
+            <div class="stat-card-header">
+                <div class="stat-card-info">
+                    <h3 class="stat-card-title">CPU</h3>
+                    <p class="stat-card-subtitle">프로세서 사용률</p>
+                </div>
+            </div>
+            <div class="stat-card-value">
+                <span id="cpu-overall" class="stat-value">-</span>
+                <span class="stat-unit">%</span>
+            </div>
+            <div class="usage-bar">
+                <div id="cpu-bar" class="usage-bar-fill usage-bar-cpu"></div>
+            </div>
+        </section>
+
+        <!-- 메모리 -->
+        <section class="stat-card stat-card-memory">
+            <div class="stat-card-header">
+                <div class="stat-card-info">
+                    <h3 class="stat-card-title">메모리</h3>
+                    <p class="stat-card-subtitle" id="mem-text">로딩 중...</p>
+                </div>
+            </div>
+            <div class="stat-card-value">
+                <span id="mem-percent" class="stat-value">-</span>
+                <span class="stat-unit">%</span>
+            </div>
+            <div class="usage-bar">
+                <div id="mem-bar" class="usage-bar-fill usage-bar-memory"></div>
+            </div>
+        </section>
+
+        <!-- 디스크 -->
+        <section class="stat-card stat-card-disk">
+            <div class="stat-card-header">
+                <div class="stat-card-info">
+                    <h3 class="stat-card-title">디스크</h3>
+                    <p class="stat-card-subtitle">
+                        <span id="disk-used">로딩 중...</span> / <span id="disk-total">-</span>
+                    </p>
+                </div>
+            </div>
+            <div class="stat-card-value">
+                <span id="disk-percent" class="stat-value">-</span>
+                <span class="stat-unit">%</span>
+            </div>
+            <div class="usage-bar">
+                <div id="disk-bar" class="usage-bar-fill usage-bar-disk"></div>
+            </div>
+        </section>
+
+        <!-- GPU 상태 -->
+        <section class="stat-card stat-card-gpu">
+            <div class="stat-card-header">
+                <div class="stat-card-info">
+                    <h3 class="stat-card-title">GPU</h3>
+                    <p class="stat-card-subtitle" id="gpu-summary">GPU 정보를 가져오는 중입니다…</p>
+                </div>
+            </div>
+            <div class="stat-card-value" id="gpu-value">
+                <span id="gpu-load" class="stat-value">-</span>
+                <span class="stat-unit">%</span>
+            </div>
+            <div class="usage-bar">
+                <div id="gpu-bar" class="usage-bar-fill usage-bar-gpu"></div>
+            </div>
+            <div class="gpu-meta">
+                <span id="gpu-mem">-</span>
+                <span id="gpu-temp"></span>
+            </div>
+        </section>
+
+        <!-- Top Processes (by CPU) -->
+        <section class="stat-card stat-card-processes">
+            <div class="stat-card-header">
+                <div class="stat-card-info">
+                    <h3 class="stat-card-title">프로세스</h3>
+                    <p class="stat-card-subtitle">CPU 사용률 상위</p>
+                </div>
+            </div>
+            <div class="table-container">
+                <table class="table compact">
+                    <thead>
+                    <tr>
+                        <th>PID</th>
+                        <th>이름</th>
+                        <th>CPU%</th>
+                        <th>메모리%</th>
+                    </tr>
+                    </thead>
+                    <tbody id="proc-body">
+                    <tr>
+                        <td colspan="4" class="table-empty">프로세스 정보를 불러오는 중입니다…</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
     </div>
 </main>
 {% endblock %}

@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from dotenv import load_dotenv
+from app.api.system import router as system_router
 
 load_dotenv()
 
@@ -32,3 +33,6 @@ async def chat(request: Request):
 @app.get("/upload", response_class=HTMLResponse)
 async def upload(request: Request):
     return templates.TemplateResponse("upload.html", {"request": request, "title": "임베딩 파일 업로드"})
+
+# API 라우터 등록
+app.include_router(system_router)

@@ -10,8 +10,6 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
 
-    let chatHistory = [];
-
     function getEmptyState() {
         return chatContainer.querySelector(".empty-state");
     }
@@ -53,15 +51,6 @@ document.addEventListener("DOMContentLoaded", () => {
         hideEmptyState();
         const el = createMessageElement("user", message);
         chatContainer.appendChild(el);
-        chatHistory.push({ role: "user", content: message });
-        scrollToBottom();
-    }
-
-    function addAssistantMessage(text) {
-        hideEmptyState();
-        const el = createMessageElement("assistant", text);
-        chatContainer.appendChild(el);
-        chatHistory.push({ role: "assistant", content: text });
         scrollToBottom();
     }
 
@@ -79,7 +68,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const body = document.createElement("div");
         body.classList.add("chat-message-body");
-
         body.innerHTML = `
             <span class="typing-dot"></span>
             <span class="typing-dot"></span>
@@ -94,11 +82,31 @@ document.addEventListener("DOMContentLoaded", () => {
         return wrapper;
     }
 
-    function updateAssistantLoading(element, text) {
+    // 에러 등 즉시 텍스트 표시
+    function setAssistantText(element, text) {
         const body = element.querySelector(".chat-message-body");
-        if (body) {
-            body.textContent = text;
-        }
+        if (!body) return;
+        body.textContent = text;
+        scrollToBottom();
+    }
+
+    // 스트리밍(타자 효과)처럼 보이게 출력
+    function streamAssistantText(element, text, speed = 25) {
+        const body = element.querySelector(".chat-message-body");
+        if (!body) return;
+
+        body.textContent = ""; // 로딩 점 제거
+        let index = 0;
+
+        const timer = setInterval(() => {
+            body.textContent += text.charAt(index);
+            index += 1;
+            scrollToBottom();
+
+            if (index >= text.length) {
+                clearInterval(timer);
+            }
+        }, speed);
     }
 
     async function send() {
@@ -127,14 +135,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (!res.ok || !data.ok) {
                 const errorText = data.error || `요청 실패 (status ${res.status})`;
-                updateAssistantLoading(loadingEl, errorText);
+                setAssistantText(loadingEl, errorText);
                 return;
             }
 
-            updateAssistantLoading(loadingEl, data.answer || "(응답이 없습니다.)");
+            const answer = data.answer || "(응답이 없습니다.)";
+            // 여기서부터 스트리밍처럼 표시
+            streamAssistantText(loadingEl, answer);
         } catch (err) {
             console.error(err);
-            updateAssistantLoading(loadingEl, "요청 중 오류가 발생했습니다.");
+            setAssistantText(loadingEl, "요청 중 오류가 발생했습니다.");
         } finally {
             sendBtn.disabled = false;
             messageInput.disabled = false;

@@ -1,6 +1,11 @@
 {% extends "layout.html" %}
 {% block title %}채팅{% endblock %}
 
+{% block head %}
+<!-- 채팅 전용 스크립트 -->
+<script src="/static/js/chat.js" defer></script>
+{% endblock %}
+
 {% block content %}
 <main>
     <header class="header">
@@ -13,7 +18,6 @@
     <div class="chat-container">
         <div class="chat-messages" id="chatMessages">
             <div class="empty-state">
-                <div class="empty-state-icon">💬</div>
                 <h3 class="empty-state-title">채팅을 시작하세요</h3>
                 <p class="empty-state-text">메시지를 입력하여 대화를 시작할 수 있습니다.</p>
             </div>

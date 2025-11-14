@@ -4,7 +4,10 @@ from fastapi.responses import JSONResponse
 from ..service.chat_service import ask_upstream
 from ..service.rag_service import build_context, augment_prompt
 
-router = APIRouter(tags=["chat"])
+router = APIRouter(
+    prefix="/api/chat",
+    tags=["chat"]
+)
 
 # .env 설정값 중 STRICT_RAG: RAG 엄격 모드 (컨텍스트 없으면 바로 종료)
 STRICT_RAG = os.getenv("STRICT_RAG", "false").lower() == "true"
@@ -71,8 +74,10 @@ async def ask(payload: dict):
 
     # FastAPI 기본 예외
     except HTTPException as e:
+        print("[/api/ask] HTTPException:", repr(e.detail))
         return JSONResponse(status_code=e.status_code, content={"ok": False, "error": e.detail})
 
     # 기타 모든 예외 (예: 네트워크, JSON 파싱, Qdrant 오류 등)
     except Exception as e:
+        print("[/api/ask] Exception:", repr(e))
         return JSONResponse(status_code=500, content={"ok": False, "error": str(e)})

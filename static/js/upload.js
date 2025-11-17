@@ -1,7 +1,9 @@
 document.addEventListener("DOMContentLoaded", () => {
     const addBtn = document.getElementById("add-btn");
+    const embedAllBtn = document.getElementById("embed-all-btn");
     const fileInput = document.getElementById("file-input");
     const tableBody = document.querySelector(".table tbody");
+    const overlay = document.getElementById("loading-overlay");
 
     if (!addBtn || !fileInput || !tableBody) return;
 
@@ -30,7 +32,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (res.ok && data.ok) {
                 alert(`업로드 완료: ${data.filename}`);
-                // 지금은 심플하게 새로고침으로 마무리
                 location.reload();
             } else {
                 alert(data.detail || data.error || "업로드 실패");
@@ -45,6 +46,39 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
+    // 전체 임베딩 버튼
+    if (embedAllBtn) {
+        embedAllBtn.addEventListener("click", async () => {
+            const ok = confirm("업로드된 모든 파일을 임베딩하시겠습니까?");
+            if (!ok) return;
+
+            overlay.style.display = "flex";
+            embedAllBtn.disabled = true;
+
+            try {
+                const res = await fetch("/api/rag/embed-all", {
+                    method: "POST",
+                });
+                const data = await res.json();
+
+                if (res.ok && data.ok) {
+                    alert("임베딩이 완료되었습니다.");
+                    location.reload();
+                } else {
+                    alert(data.detail || data.error || "임베딩 실패");
+                }
+            } catch (err) {
+                console.error(err);
+                alert("임베딩 중 오류가 발생했습니다.");
+            } finally {
+                overlay.style.display = "none";
+                embedAllBtn.disabled = false;
+                embedAllBtn.textContent = "임베딩";
+            }
+        });
+    }
+
+    // 삭제 버튼
     tableBody.addEventListener("click", async (e) => {
         const btn = e.target.closest("button[data-action]");
         if (!btn) return;
@@ -73,33 +107,6 @@ document.addEventListener("DOMContentLoaded", () => {
             } catch (err) {
                 console.error(err);
                 alert("삭제 중 오류가 발생했습니다.");
-            }
-        }
-
-        if (action === "embed") {
-            try {
-                btn.disabled = true;
-                btn.textContent = "임베딩 중...";
-
-                const res = await fetch(
-                    `/api/rag/embed/${encodeURIComponent(filename)}`,
-                    { method: "POST" }
-                );
-                const data = await res.json();
-
-                if (res.ok && data.ok) {
-                    alert("임베딩 완료.");
-                    // 나중에 상태만 바꾸는 것도 가능하지만 지금은 새로고침으로 단순 처리
-                    location.reload();
-                } else {
-                    alert(data.detail || data.error || "임베딩 실패");
-                }
-            } catch (err) {
-                console.error(err);
-                alert("임베딩 중 오류가 발생했습니다.");
-            } finally {
-                btn.disabled = false;
-                btn.textContent = "임베딩";
             }
         }
     });

@@ -3,6 +3,8 @@ from pathlib import Path
 
 from fastapi import APIRouter, UploadFile, File, HTTPException
 
+from app.rag.indexer import run as run_indexer
+
 router = APIRouter(prefix="/api/rag", tags=["rag"])
 
 UPLOAD_DIR = Path("data/uploads")
@@ -26,3 +28,32 @@ async def upload_file(file: UploadFile = File(...)):
         )
 
     return {"ok": True, "filename": file.filename}
+
+@router.post("/embed-all")
+async def embed_all():
+    try:
+        run_indexer()
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"임베딩 중 오류: {e}",
+        )
+
+    return {"ok": True}
+
+@router.delete("/file/{filename}")
+async def delete_file(filename: str):
+    file_path = UPLOAD_DIR / filename
+
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail="파일이 존재하지 않습니다.")
+
+    try:
+        file_path.unlink()
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"파일 삭제 중 오류: {e}",
+        )
+
+    return {"ok": True, "filename": filename}

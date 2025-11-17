@@ -19,6 +19,11 @@
         <div class="info">
             총 <span id="total-count">{{ count }}</span>개 파일
         </div>
+        <div class="actions-right">
+            <button class="primary-btn" id="embed-all-btn">
+                임베딩
+            </button>
+        </div>
     </section>
 
     <div class="table-container">
@@ -40,13 +45,6 @@
                 <td>{{ f.status }}</td>
                 <td>
                     <button
-                            class="table-btn table-btn-sm"
-                            data-action="embed"
-                            data-filename="{{ f.name }}"
-                    >
-                        임베딩
-                    </button>
-                    <button
                             class="table-btn table-btn-sm table-btn-danger"
                             data-action="delete"
                             data-filename="{{ f.name }}"
@@ -65,6 +63,11 @@
             {% endif %}
             </tbody>
         </table>
+    </div>
+
+    <div id="loading-overlay" class="loading-overlay" style="display: none;">
+        <div class="spinner"></div>
+        <p>임베딩 중입니다...</p>
     </div>
 
     <input type="file" id="file-input" style="display: none;">
